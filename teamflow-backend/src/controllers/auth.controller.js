@@ -1,4 +1,5 @@
 import User from '../models/users.model.js';
+import Membership from "../models/membership.model.js"
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -56,8 +57,15 @@ export const login = async (req, res) => {
             return res.status(401).json({ message: "Invalid Credentials" })
         }
 
+        //pick first membership
+        const membership = await Membership.findOne(
+            {
+                user:user._id
+            }
+        )
+
         //generate tokens
-        const accessToken = generateAccessToken(user);
+        const accessToken = generateAccessToken(user, membership);
         const refreshToken = generateRefreshToken(user);
 
         // store refresh token in DB
