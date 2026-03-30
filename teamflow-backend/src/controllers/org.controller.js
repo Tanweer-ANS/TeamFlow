@@ -52,3 +52,15 @@ export const getMembers = async(req, res) => {
     }
 }
 
+//Get my Orgs
+
+export const getMyOrganizations = async(req, res) => {
+    try {
+        const memberships = await Membership.find({
+            user:req.user.userId
+        }).populate("organization", "name")
+        res.json(memberships)
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}

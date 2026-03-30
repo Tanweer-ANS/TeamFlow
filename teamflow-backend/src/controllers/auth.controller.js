@@ -57,15 +57,9 @@ export const login = async (req, res) => {
             return res.status(401).json({ message: "Invalid Credentials" })
         }
 
-        //pick first membership
-        const membership = await Membership.findOne(
-            {
-                user:user._id
-            }
-        )
 
         //generate tokens
-        const accessToken = generateAccessToken(user, membership);
+        const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
         // store refresh token in DB

@@ -5,6 +5,7 @@ import {
     createOrganization,
     addMember,
     getMembers,
+    getMyOrganizations
 } from "../controllers/org.controller.js"
 
 const router = express.Router()
@@ -22,5 +23,7 @@ router.get( "/members",
     authorizeRoles("ADMIN"),
     getMembers
 )
+
+router.get("/my-orgs", authMiddleware, getMyOrganizations)
 
 export default router;
