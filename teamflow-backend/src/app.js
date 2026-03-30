@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.routes.js"
-
 import orgRoutes from "./routes/org.routes.js"
+import inviteRoutes from "./routes/invite.routes.js"
 
 //temp
 import testRoutes from "./routes/test.routes.js"
@@ -18,6 +18,9 @@ app.use("/api/test", testRoutes)
 
 //Organization Routes
 app.use("/api/org", orgRoutes)
+
+//Invite Routes
+app.use("/api/invite", inviteRoutes);
 
 app.get("/", (req, res) => {
   res.send("TeamFlow API Running...");
