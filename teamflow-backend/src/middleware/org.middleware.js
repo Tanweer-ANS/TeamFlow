@@ -1,4 +1,4 @@
-import Membership from "../models/Membership.js";
+import Membership from "../models/membership.model.js";
 
 const orgMiddleware = async (req, res, next) => {
     try {
