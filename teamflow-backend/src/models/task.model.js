@@ -5,6 +5,9 @@ const taskSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+
+    description: String,
+
     status: {
         type: String,
         enum: ["TODO", "IN_PROGRESS", "DONE"],
@@ -13,7 +16,8 @@ const taskSchema = new mongoose.Schema({
     project: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Project",
-        required: true
+        required: true,
+        index: true
     },
     assignedTo: {
         type: mongoose.Schema.Types.ObjectId,
@@ -22,12 +26,13 @@ const taskSchema = new mongoose.Schema({
     organization: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Organization",
-        required: true
+        required: true ,
+        index: true
     }
 }, { timestamps: true })
 
 //Indexes
-taskSchema.index({ organization: 1 });
-taskSchema.index({ organization: 1, project: 1 });
+// taskSchema.index({ organization: 1 });
+// taskSchema.index({ organization: 1, project: 1 });
 
-export default mongoose.Schema("Task", taskSchema)
+export default mongoose.model("Task", taskSchema);

@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.routes.js"
 import orgRoutes from "./routes/org.routes.js"
 import inviteRoutes from "./routes/invite.routes.js"
 import projectRoutes from "./routes/project.routes.js"
+import taskRoutes from "./routes/task.routes.js"
 
 //temp
 import testRoutes from "./routes/test.routes.js"
@@ -25,6 +26,9 @@ app.use("/api/invite", inviteRoutes);
 
 //Project Routes
 app.use("/api/projects", projectRoutes)
+
+//Task Routes
+app.use("/api/tasks", taskRoutes)
 
 app.get("/", (req, res) => {
   res.send("TeamFlow API Running...");

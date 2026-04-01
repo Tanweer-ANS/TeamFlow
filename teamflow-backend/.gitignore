@@ -144,3 +144,4 @@ vite.config.ts.timestamp-*
 .vite/
 
 note.txt
+routes.reference.txt
