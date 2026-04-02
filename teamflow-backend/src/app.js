@@ -1,5 +1,11 @@
 import express from "express";
+import helmet from "helmet";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
+import mongoSanitize from "express-mongo-sanitize";
+import xss from "xss-clean";
+import hpp from "hpp";
+
 import authRoutes from "./routes/auth.routes.js"
 import orgRoutes from "./routes/org.routes.js"
 import inviteRoutes from "./routes/invite.routes.js"
@@ -11,8 +17,42 @@ import testRoutes from "./routes/test.routes.js"
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+//Global error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+
+  res.status(err.status || 500).json({
+    message: err.message || "Internal Server Error",
+  });
+})
+
+app.use(helmet())
+// app.use(cors({
+//   origin: "http://localhost:5173",
+//   credentials: true
+// }));
+app.use(cors())
+
+
+app.use(express.json({ limit: "10kb" }));
+
+//Rate Limiting
+const limiter = rateLimit({
+  max: 100 , //100 requests
+  windowMs: 15*60*1000 , //15 mins
+  message: "Too many requests, try again later"
+})
+app.use("/api", limiter)
+
+//Mongo sanitize
+app.use(mongoSanitize())
+
+//XSS Protection
+app.use(xss())
+
+//Prevent Parameter Pollution
+app.use(hpp())
+
 
 //Authorization Routes
 app.use("/api/auth", authRoutes)

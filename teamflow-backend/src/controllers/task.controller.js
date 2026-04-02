@@ -1,5 +1,6 @@
 import Task from "../models/task.model.js";
 import Project from "../models/project.model.js";
+import APIFeatures from "../utils/apiFeatures.js";
 
 // Create Task
 export const createTask = async (req, res) => {
@@ -30,24 +31,33 @@ export const createTask = async (req, res) => {
   }
 };
 
-// Get Tasks (by project)
+// Get Tasks (by project)  [Added Advanced Filtering, Searching, Sorting, Pagination]
 export const getTasks = async (req, res) => {
   try {
-    const { projectId } = req.query;
-
-    const filter = {
+    const baseFilter = {
       organization: req.user.organizationId,
     };
 
-    if (projectId) {
-      filter.project = projectId;
-    }
+    const features = new APIFeatures(Task.find(), req.query)
+      .filter(baseFilter)
+      .search(["title"])
+      .sort()
+      .paginate();
 
-    const tasks = await Task.find(filter)
-      .populate("assignedTo", "name email")
-      .sort({ createdAt: -1 });
+    const tasks = await features.query.populate(
+      "assignedTo",
+      "name email"
+    );
 
-    res.json(tasks);
+   const total = await Task.countDocuments(features.query.getFilter());
+
+    res.json({
+      success: true,
+      page: features.page,
+      limit: features.limit,
+      total,
+      data: tasks,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
