@@ -1,6 +1,8 @@
 import Task from "../models/task.model.js";
 import Project from "../models/project.model.js";
 import APIFeatures from "../utils/apiFeatures.js";
+import { getCache, setCache } from "../utils/cache.js";
+import { clearCacheByPattern } from "../utils/cache.js";
 
 // Create Task
 export const createTask = async (req, res) => {
@@ -25,6 +27,12 @@ export const createTask = async (req, res) => {
       assignedTo,
     });
 
+    //clear cache
+    await clearCacheByPattern(
+      `tasks:${req.user.organizationId}:*`
+    )
+
+
     res.status(201).json(task);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -34,6 +42,16 @@ export const createTask = async (req, res) => {
 // Get Tasks (by project)  [Added Advanced Filtering, Searching, Sorting, Pagination]
 export const getTasks = async (req, res) => {
   try {
+    const cacheKey = `tasks:${req.user.organizationId}:${JSON.stringify(req.query)}`;
+    const cached = await getCache(cacheKey);
+
+    if (cached) {
+      return res.json({
+        source: "cache",
+        ...cached,
+      });
+    }
+
     const baseFilter = {
       organization: req.user.organizationId,
     };
@@ -51,12 +69,27 @@ export const getTasks = async (req, res) => {
 
    const total = await Task.countDocuments(features.query.getFilter());
 
-    res.json({
-      success: true,
+    // res.json({
+    //   success: true,
+    //   page: features.page,
+    //   limit: features.limit,
+    //   total,
+    //   data: tasks,
+    // });
+
+    // Set cache for 1 minute
+    const response = {
+      total,
       page: features.page,
       limit: features.limit,
-      total,
       data: tasks,
+    }
+
+    await setCache(cacheKey, response, 60);
+
+    res.json({
+      source: "db",
+      ...response,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -79,6 +112,12 @@ export const updateTask = async (req, res) => {
       return res.status(404).json({ message: "Task not found" });
     }
 
+     //clear cache
+    await clearCacheByPattern(
+      `tasks:${req.user.organizationId}:*`
+    )
+
+
     res.json(task);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -96,6 +135,12 @@ export const deleteTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
+
+     //clear cache
+    await clearCacheByPattern(
+      `tasks:${req.user.organizationId}:*`
+    )
+
 
     res.json({ message: "Task deleted" });
   } catch (error) {

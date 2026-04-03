@@ -1,5 +1,6 @@
 import Project from "../models/project.model.js"
 import APIFeatures from "../utils/apiFeatures.js"
+import { clearCacheByPattern } from "../utils/cache.js";
 
 // Create Project
 export const createProject = async(req, res) => {
@@ -10,6 +11,11 @@ export const createProject = async(req, res) => {
         })
 
         await project.save()
+
+        //clear cache
+        await clearCacheByPattern(
+          `projects:${req.user.organizationId}:*`
+        )
         
         res.status(201).json(project)
     } catch (error) {
@@ -64,6 +70,11 @@ export const updateProject = async(req, res) => {
             return res.status(404).json({ message: "Project Not Found"})
         }
 
+        //clear cache
+        await clearCacheByPattern(
+          `projects:${req.user.organizationId}:*`
+        )
+
         res.json(project)
     } catch (error) {
         res.status(500).json({ error: error.message})
@@ -83,6 +94,11 @@ export const deleteProject = async(req, res) => {
         if(!project) {
             return res.status(404).json({ message: "Project Not found to delete"})
         }
+
+        //clear cache
+        await clearCacheByPattern(
+          `projects:${req.user.organizationId}:*`
+        )
 
         res.json({ message: "Project Deleted"})
     } catch (error) {
