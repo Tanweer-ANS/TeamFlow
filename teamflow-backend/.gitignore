@@ -145,3 +145,8 @@ vite.config.ts.timestamp-*
 
 note.txt
 routes.reference.txt
+
+
+out.json
+out.txt
+tmp-dns.cjs
