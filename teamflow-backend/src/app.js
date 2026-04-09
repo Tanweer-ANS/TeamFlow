@@ -45,7 +45,14 @@ const limiter = rateLimit({
 app.use("/api", limiter)
 
 //Mongo sanitize
-app.use(mongoSanitize())
+// app.use(mongoSanitize())
+app.use((req, res, next) => {
+  if (req.body) {
+    mongoSanitize()(req, res, next);
+  } else {
+    next();
+  }
+});
 
 //XSS Protection
 app.use(xss())
