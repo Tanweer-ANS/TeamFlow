@@ -3,7 +3,6 @@ import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import mongoSanitize from "express-mongo-sanitize";
-import xss from "xss-clean";
 import hpp from "hpp";
 
 import authRoutes from "./routes/auth.routes.js"
@@ -54,10 +53,7 @@ app.use((req, res, next) => {
   }
 });
 
-//XSS Protection
-app.use(xss())
-
-//Prevent Parameter Pollution
+// Prevent Parameter Pollution
 app.use(hpp())
 
 
