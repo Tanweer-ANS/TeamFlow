@@ -56,6 +56,9 @@ app.use((req, res, next) => {
 // Prevent Parameter Pollution
 app.use(hpp())
 
+app.use("/api/health", (req, res) => {
+  res.json({ status: "ok" })
+})
 
 //Authorization Routes
 app.use("/api/auth", authRoutes)
